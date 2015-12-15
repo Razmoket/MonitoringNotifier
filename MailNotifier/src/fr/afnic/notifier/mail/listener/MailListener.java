@@ -15,14 +15,24 @@ import javax.mail.event.MessageCountEvent;
 public class MailListener {
 
 	private String server = "";
-	private String userid = "	";
+	private String userid = "";
 	private String password = "";
 
 	public MailListener() {
 	}
-
+	
+	public void init(String host, String user, String pwd){
+		server= host;
+		userid=user;
+		password=pwd;
+		System.out.println("init ==> server:"+server
+				+" userid:"+userid
+				+" password:"+password);
+	}
+	
 	public static void main(String arg[]) {
 		MailListener mail = new MailListener();
+		mail.init(arg[0], arg[1], arg[2]); 
 		mail.addListener();
 	}
 
