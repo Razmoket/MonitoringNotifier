@@ -1,5 +1,7 @@
 package fr.afnic.notifier.mail.listener;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -10,8 +12,6 @@ import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
-import javax.mail.event.MessageCountAdapter;
-import javax.mail.event.MessageCountEvent;
 
 public class MailListener {
 
@@ -34,9 +34,9 @@ public class MailListener {
 		MailListener mail = new MailListener();
 		if (arg.length == 3) {
 			mail.init(arg[0], arg[1], arg[2]);
-		} else if(arg.length > 3){
+		} else if (arg.length > 3) {
 			mail.init(arg[0], arg[1], arg[2]);
-			refresh = arg[3]+"000";
+			refresh = arg[3] + "000";
 		} else {
 			System.out.println("Usage: MailListener [ServerHostName] [userId] [password] <refresh default10s>");
 			System.exit(0);
@@ -80,13 +80,14 @@ public class MailListener {
 						boolean isNeedAction = mailAnalyser(message[i]);
 
 						// TODO effectuer les actions nécessaire sur réception d'un message
-						if(isNeedAction){
+						if (isNeedAction) {
 							// le mail est un message où l'on doit envoyer une alerte
-							System.out.println("Générer une alerte");
+							System.out.println("Générer une alerte avec un fichier");
+							flushNoticeFile(message[i]);
+							
 						}
 						readCount++;
 						message[i].setFlag(Flag.SEEN, isNeedAction);
-						
 						
 						// System.out.print("Message : ");
 						// InputStream stream = message[i].getInputStream();
@@ -99,20 +100,32 @@ public class MailListener {
 				// Check mail once in "freq" MILLIseconds
 				int freq = Integer.parseInt(refresh);
 
-				System.out.println("Theread will sleep for "+freq/1000 +" seconds");
+				System.out.println("Theread will sleep for " + freq / 1000 + " seconds");
 				Thread.sleep(freq); // sleep for freq milliseconds
-				System.out.println("Thread awake after "+freq/1000+" seconds");
+				System.out.println("Thread awake after " + freq / 1000 + " seconds");
 			}
-			//folder.close(true);
-			//store.close();
+			// folder.close(true);
+			// store.close();
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 	
+	private void flushNoticeFile(Message mail) throws IOException, MessagingException{
+		String fileName = mail.getSubject().trim();
+
+		FileOutputStream fos = new FileOutputStream(new File("notice/"+fileName+".notice"));
+		fos.write(("\nSentDate : " + mail.getSentDate()).getBytes());
+		fos.write(("\nFrom : " + mail.getFrom()[0]).getBytes());
+		fos.write(("\nSubject : " + mail.getSubject()).getBytes());
+		
+		fos.flush();
+		fos.close();
+	}
+
 	/*
-	 * Dans cette méthode on va vouloir régarder l'entete de mail pour 
+	 * Dans cette méthode on va vouloir régarder l'entete de mail pour
 	 */
 	private boolean mailAnalyser(Message mail) throws MessagingException{
 		System.out.println("------------ mailAnalyser ------------");
@@ -133,49 +146,6 @@ public class MailListener {
 		}
 		return false;
 	}
-
-	// TODO a supprimer 
-	private MessageCountAdapter getMessageCountAdapter() {
-		return new MessageCountAdapter() {
-			public void messagesAdded(MessageCountEvent ev) {
-				System.out.println("message listener invoked.");
-				Message[] msgs = ev.getMessages();
-				System.out.println("Got " + msgs.length + " new messages");
-				// Just dump out the new messages
-				for (int i = 0; i < msgs.length; i++) {
-					try {
-						System.out.println("-----");
-
-						if (msgs[i].getSubject().toLowerCase().startsWith("effort sheet details")) {
-
-							/*
-							 * Connection con=null; try{ Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
-							 * con=DriverManager.getConnection("jdbc:odbc:mailDS"); Statement stmt=con.createStatement(); String query =
-							 * "insert into Messages(Message) Values("+msgs[i].getContent().toString()+")"; ResultSet rs=stmt.executeQuery(query);
-							 * }catch(Exception e){ e.printStackTrace(); }
-							 */
-							System.out.println("Message " + msgs[i].getMessageNumber() + ":");
-							msgs[i].writeTo(System.out);
-						}
-					} catch (IOException ioex) {
-						ioex.printStackTrace();
-					} catch (MessagingException mex) {
-						mex.printStackTrace();
-					}
-				}
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see javax.mail.event.MessageCountListener#messagesRemoved(javax.mail.event.MessageCountEvent)
-			 */
-			public void messagesRemoved(MessageCountEvent arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-		};
-	}
-
+	
+	
 }
