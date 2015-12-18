@@ -26,7 +26,8 @@ AAAAAAA                   AAAAAAAfffffffff              nnnnnn    nnnnnniiiiiiii
 																		   
 # Project Name
 
-Ce processus a pour but de permettre de générer un événement, actuellement via la génération d'un fichier, pour réveiller notre systèmre de monitoring.
+Ce processus a pour but de permettre de générer un événement, actuellement via la génération d'un fichier, 
+pour réveiller notre systèmre de monitoring.
 
 ## Installation
 
@@ -41,16 +42,19 @@ unzip du fichier pour avoir l'arborescence suvante:
 
 ## Usage
 
-Le processus actuel tourne en ""tâche de fond" au sens où il interroge une boîte mail avec une certaine fréquence pour vérifier:
+Le processus actuel tourne en ""tâche de fond" au sens où il interroge une boîte mail avec une certaine 
+fréquence pour vérifier:
 	1/ est ce qu'il y a de nouveau mail non lu.
 	2/ est ce que ces nouveau mails non lus correspondent à des critères de mails de notice
-	3/ si ces mails matchent avec une règles de "notice" alors le processus génère un fichier <objet du mail>.notice avec comme contenu de fichier la date d'envoie, le from et le sujet.
+	3/ si ces mails matchent avec une règles de "notice" alors le processus génère un fichier 
+		<objet du mail>.notice avec comme contenu de fichier la date d'envoie, le from et le sujet.
 	4/ passer le mail à lu
 
 La "configuration" est actuellement passée en paramètre d'appel du processus, à savoir:
 	MailListener [ServerHostName] [userId] [password] <refresh default10s>
 
-La fréquence de rafraichissement est par défaut de 10 secondes, il faut ajouter ce paramètres optionnel pour modifier la valeur.
+La fréquence de rafraichissement est par défaut de 10 secondes, il faut ajouter ce paramètres optionnel 
+pour modifier la valeur.
 
 Dans le script de démarrage "start.cmd" ces différentes variables de configuration sont au début du fichier :
 	set mailServer="zzzzzzzz"
