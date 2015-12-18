@@ -54,7 +54,7 @@ public class MailListener {
 					return new PasswordAuthentication(userid, password);
 				}
 			});
-			session.setDebug(true);
+			//session.setDebug(true);
 			// Get a Store object
 			Store store = session.getStore("imap");
 			System.out.println("" + store.getURLName());
@@ -136,12 +136,16 @@ public class MailListener {
 		String from = mail.getFrom()[0].toString();
 		
 		if(mail.getSubject().startsWith("[tld-monitor]") &&
-				from.contains("tld-monitor-bounces@icann.org")){
+				from.contains("tld-monitor-bounces@icann.org")){ //Notice SLA Monitoring
 			return true;
-		}
-		//TEST 
-		if(mail.getSubject().startsWith("[tld-monitor]") &&
-				from.contains("bourbour@free.fr")){
+		} else if(mail.getSubject().startsWith("NOTICE OF URS CASE COMMENCEMENT -")){ //URS: NOTICE OF URS CASE COMMENCEMENT
+			//TODO faire un update en base pour mettre à jour les Epp status du NDD
+			return true;
+		} else if(mail.getSubject().startsWith("Notice of Final Determination")){ //URS: Notice of Final Determination
+			//TODO faire un update en base pour mettre à jour les Epp status du NDD
+			return true;
+		} else if(mail.getSubject().startsWith("[tld-monitor]") &&
+				from.contains("bourbour@free.fr")){ //TEST
 			return true;
 		}
 		return false;
